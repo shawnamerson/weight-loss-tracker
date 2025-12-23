@@ -46,22 +46,29 @@ export default function SignupPage() {
         // Check if email already exists
         if (data.user.identities && data.user.identities.length === 0) {
           setError('An account with this email already exists')
+          setLoading(false)
           return
         }
 
         // If email confirmation is disabled, user is logged in immediately
-        // Profile is automatically created by database trigger
-        setSuccess('Account created successfully! Redirecting...')
+        // Check if session was created
+        if (data.session) {
+          // Profile is automatically created by database trigger
+          setSuccess('Account created successfully! Redirecting...')
 
-        // Small delay to show success message
-        setTimeout(() => {
-          router.push('/onboarding')
-          router.refresh()
-        }, 1000)
+          // Redirect to onboarding
+          setTimeout(() => {
+            router.push('/onboarding')
+            router.refresh()
+          }, 500)
+        } else {
+          // Email confirmation might still be enabled in Supabase
+          setSuccess('Account created! Please check your email to confirm your account.')
+          setLoading(false)
+        }
       }
     } catch (error: any) {
       setError(error.message)
-    } finally {
       setLoading(false)
     }
   }
