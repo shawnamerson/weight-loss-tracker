@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/generate-meal-plans",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
