@@ -35,11 +35,14 @@ export default function SignupPage() {
     setLoading(true)
 
     try {
+      // Use environment variable for production, fallback to window.location.origin for local dev
+      const redirectUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+          emailRedirectTo: `${redirectUrl}/auth/callback?next=/onboarding`,
         },
       })
 
