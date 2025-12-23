@@ -35,34 +35,29 @@ export default function SignupPage() {
     setLoading(true)
 
     try {
-      // Use environment variable for production, fallback to window.location.origin for local dev
-      const redirectUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
-
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: `${redirectUrl}/auth/callback?next=/onboarding`,
-        },
       })
 
       if (error) throw error
 
       if (data.user) {
-        // Check if email confirmation is required
+        // Check if email already exists
         if (data.user.identities && data.user.identities.length === 0) {
           setError('An account with this email already exists')
           return
         }
 
-        // If user needs to confirm email, show message
-        if (data.user.confirmation_sent_at || !data.user.confirmed_at) {
-          setSuccess('Account created! Please check your email to confirm your account before signing in.')
-        } else {
-          // Profile is automatically created by database trigger
+        // If email confirmation is disabled, user is logged in immediately
+        // Profile is automatically created by database trigger
+        setSuccess('Account created successfully! Redirecting...')
+
+        // Small delay to show success message
+        setTimeout(() => {
           router.push('/onboarding')
           router.refresh()
-        }
+        }, 1000)
       }
     } catch (error: any) {
       setError(error.message)
